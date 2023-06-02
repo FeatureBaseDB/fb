@@ -15,7 +15,14 @@ type Code string
 
 var CodeTODO Code = "TODOError"
 
-func New(code Code, message string) error {
+func New(message string) error {
+	return errors.WithStack(codedError{
+		Code:    ErrUncoded,
+		Message: message,
+	})
+}
+
+func NewCoded(code Code, message string) error {
 	return errors.WithStack(codedError{
 		Code:    code,
 		Message: message,

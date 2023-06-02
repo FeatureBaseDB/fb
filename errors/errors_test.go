@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/molecula/featurebase/v3/errors"
+	"github.com/featurebasedb/fb/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,7 +13,7 @@ func TestErrors(t *testing.T) {
 		uncoded := newUncoded("uncoded error")
 		fnf := newErrFieldNotFound("fld")
 		tnf := newErrTableNotFound("tbl")
-		fnfCustom := errors.New(errFieldNotFound, "custom field message")
+		fnfCustom := errors.NewCoded(errFieldNotFound, "custom field message")
 
 		tests := []struct {
 			err    error
@@ -70,21 +70,21 @@ const (
 )
 
 func newUncoded(message string) error {
-	return errors.New(
+	return errors.NewCoded(
 		errUncoded,
 		message,
 	)
 }
 
 func newErrFieldNotFound(field string) error {
-	return errors.New(
+	return errors.NewCoded(
 		errFieldNotFound,
 		"field not found: "+field,
 	)
 }
 
 func newErrTableNotFound(table string) error {
-	return errors.New(
+	return errors.NewCoded(
 		errTableNotFound,
 		"table not found: "+table,
 	)
