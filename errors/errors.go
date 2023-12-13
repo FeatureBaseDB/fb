@@ -15,6 +15,8 @@ type Code string
 
 var CodeTODO Code = "TODOError"
 
+// New yields an error which is a coded error,
+// using the special value ErrUncoded as the type.
 func New(message string) error {
 	return errors.WithStack(codedError{
 		Code:    ErrUncoded,
@@ -22,6 +24,10 @@ func New(message string) error {
 	})
 }
 
+// NewCoded yields an error of an unexported type that
+// incorporates the code, allowing us to distinguish
+// between "errors with the same code" and "the exact
+// text of the message".
 func NewCoded(code Code, message string) error {
 	return errors.WithStack(codedError{
 		Code:    code,
@@ -29,14 +35,17 @@ func NewCoded(code Code, message string) error {
 	})
 }
 
+// As wraps pkg/errors.As.
 func As(err error, target interface{}) bool {
 	return errors.As(err, target)
 }
 
+// Cause wraps pkg/errors.Cause.
 func Cause(err error) error {
 	return errors.Cause(err)
 }
 
+// Errorf wraps errors.Errorf.
 func Errorf(format string, args ...interface{}) error {
 	return errors.Errorf(format, args...)
 }
@@ -50,6 +59,15 @@ func Is(err error, target Code) bool {
 	return errors.Is(err, match)
 }
 
+// IsCoded reports whether the error is a codedError at all, and
+// thus, whether it makes sense to check it against Is at all.
+func IsCoded(err error) bool {
+	_, ok := err.(codedError)
+	return ok
+}
+
+// Unwrap is a convenience function that just calls
+// pkg/errors/Unwrap.
 func Unwrap(err error) error {
 	return errors.Unwrap(err)
 }
@@ -66,10 +84,14 @@ func WithStack(err error) error {
 	return errors.WithStack(err)
 }
 
+// Wrap is a convenience function that just calls
+// pkg/errors/Wrap.
 func Wrap(err error, message string) error {
 	return errors.Wrap(err, message)
 }
 
+// Wrapf is a convenience function that just calls
+// pkg/errors/Wrapf.
 func Wrapf(err error, fmt string, args ...interface{}) error {
 	return errors.Wrapf(err, fmt, args...)
 }
@@ -101,6 +123,8 @@ func (ce codedError) Is(err error) bool {
 }
 
 const (
+	// ErrUncoded denotes an error that doesn't have a more
+	// specific code.
 	ErrUncoded Code = "Uncoded"
 )
 
